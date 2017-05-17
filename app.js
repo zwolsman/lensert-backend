@@ -5,5 +5,4 @@ const uploadRoute = require('./routes/upload')
 app.use(uploadRoute.routes())
 app.use(uploadRoute.allowedMethods())
 
-
 module.exports = app
