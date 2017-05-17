@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lensert - A simple screenshot utility</title>
+    <meta name="description" content="Lensert, a simple screenshot utility for OS X and Windows">
+    <meta name="author" content="Marvin Zwolsman">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+    <!-- css -->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/skeleton.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/odometer-theme-minimal.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/odometer.min.js"></script>
+
+    <script>
+        console.log([" ______________", "< Hello there! >", " --------------", "        \\   ^__^", "         \\  (oo)\\_______", "            (__)\\       )\\/\\", "                ||----w |", "                ||     ||"].join("\n"));
+        var shots = 0, views = 0;
+        var socket = io(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : ''));
+        socket.on('shots', function (data) {
+            if (shots < data.shots) {
+                shots = data.shots;
+                document.getElementById('shots').innerText = shots;
+            }
+        });
+        socket.on('views', function (data) {
+            if (views < data.views) {
+                views = data.views;
+                document.getElementById('views').innerText = views;
+            }
+        });
+
+        var types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/tiff', 'image/bmp', 'image/vnd.ms-photo'];
+        document.onpaste = function (event) {
+            var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (var index in items) {
+                var item = items[index];
+                if (item.kind === 'file' && types.indexOf(item.type) !== -1) {
+                    event.preventDefault();
+                    uploadFile(item.getAsFile());
+                    return;
+                }
+            }
+        };
+
+        function dropIndicators(show) {
+            var elems = document.getElementsByClassName('drop-indicator');
+            for (var i = 0; i < elems.length; i++) {
+                var elem = elems[i];
+                elem.style.opacity = show ? 1 : 0;
+            }
+        }
+        function uploadFile(file) {
+            var url = '/upload';
+            var xhr = new XMLHttpRequest();
+            var fd = new FormData();
+            xhr.open("POST", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var resp = JSON.parse(xhr.responseText);
+                    if (typeof(resp) != 'undefined' && typeof(resp.result) != 'undefined') {
+                        if (resp.result == ':)') {
+                            window.location = resp.link;
+                        } else {
+                            alert(resp.message);
+                        }
+                    }
+                }
+            };
+            fd.append("shot", file);
+            xhr.send(fd);
+        }
+
+    </script>
+</head>
+<body>
+<div class="drop-indicator top" style="opacity: 0"></div>
+<div class="drop-indicator right" style="opacity: 0"></div>
+<div class="drop-indicator bottom" style="opacity: 0"></div>
+<div class="drop-indicator left" style="opacity: 0"></div>
+<div class="table-container" id="test">
+    <div class="table-block footer-push">
+        <div class="container">
+            <div class="header">
+                <h2 class="title">Lensert, a simple screenshot utility.</h2>
+                <% if (isMac) { %>
+                <a class="button button-primary" href="/download?type=mac"><i class="fa fa-apple"
+                                                                              aria-hidden="true"></i>
+                    Download</a>
+
+                <p>Not on a Mac? Download for <a href="/download?type=win">Windows</a></p>
+                <% } else { %>
+                <a class="button button-primary" href="/download?type=win"><i class="fa fa-windows"
+                                                                              aria-hidden="true"></i> Download</a>
+
+                <% if (isWindows) { %>
+                <p>Not on Windows? Download for <a href="/download?type=mac">Mac OS X</a></p>
+                <% } else { %>
+                <p>Or download for <a href="/download?type=mac">Mac OS X</a></p>
+
+                <% }} %>
+
+                <div class="value-props row">
+                    <div class="four columns value-prop">
+                        <img class="value-img"
+                             src="/img/icon-area.svg">
+                        Select an Area</br>
+                        <% if (isMac) { %>
+                        <code>⌘ + ⇧ + A</code>
+                        <% } else { %>
+                        <code>Ctrl + Shift + A</code>
+                        <% } %>
+                    </div>
+                    <div class="four columns value-prop">
+                        <img class="value-img"
+                             src="/img/icon-window.svg">
+                        Select a Window</br>
+                        <% if (isMac) { %>
+                        <code>⌘ + ⇧ + W</code>
+                        <% } else { %>
+                        <code>Ctrl + Shift + W</code>
+                        <% } %>
+
+                    </div>
+                    <div class="four columns value-prop">
+                        <img class="value-img"
+                             src="/img/icon-desktop.svg">
+                        Fullscreen</br>
+                        <% if (isMac) { %>
+                        <code>⌘ + ⇧ + F</code>
+                        <% } else { %>
+                        <code>Ctrl + Shift + F</code>
+                        <% } %>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-block">
+        <div class="container">
+            <footer class="twelve columns">
+                <p>Lensert hosts <code id="shots" class="odometer"><%= shots.toLocaleString() %></code> shots and they
+                    were viewed <code id="views" class="odometer"><%= views.toLocaleString() %></code> times</p>
+            </footer>
+        </div>
+    </div>
+</div>
+</body>
+</html>
