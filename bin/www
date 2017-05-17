@@ -4,9 +4,8 @@
  * Module dependencies.
  */
 
-var app = require('../app');
 var debug = require('debug')('lensert-server:server');
-var http = require('http');
+var io = require('../io')
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +18,8 @@ var port = normalizePort(process.env.PORT || '3000');
  * Create HTTP server.
  */
 
-var server = require('http').createServer(app.callback());
+var server = require('../server')
+io.server(server)
 
 /**
  * Listen on provided port, on all network interfaces.

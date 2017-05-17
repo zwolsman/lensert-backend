@@ -47,7 +47,7 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     let id = path.basename(ctx.req.file.filename, shot.ext)
     debug('new upload; id: ' + chalk.yellow(id) + ', origin: ' + chalk.yellow(shot.origin))
     db.incrAsync('shots').then(total => {
-        debug('TODO: broadcast with socket.io')
+        require('../io').instance().emit('shots', {shots: total})
     })
 
     db.hmsetAsync(id, shot)
