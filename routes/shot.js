@@ -1,6 +1,6 @@
 //libs
 const koaRouter = require('koa-router')
-const debug = require('debug')('lensert-server:upload')
+const debug = require('debug')('lensert-server:shot')
 const chalk = require('chalk')
 const fs = require('fs')
 
@@ -10,6 +10,7 @@ const router = new koaRouter()
 //db
 const db = require('../db')
 
+//debug
 //Get information
 router.get('/i(nfo|nformation)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp|tif|bmp|jxr]+)?', async(ctx, next) => {
     let exists = await db.existsAsync(ctx.params.sid)
@@ -22,7 +23,7 @@ router.get('/i(nfo|nformation)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp
     delete base.origin
     base.size = parseInt(base.size)
 
-    let views = await db.getAsync(ctx.params.sid + ':views') || 0
+    let views = await db.scardAsync(ctx.params.sid + ':views') || 0
     let colors = await db.smembersAsync(ctx.params.sid + ':colors') || []
     let result = {
         response: ':)',
@@ -54,6 +55,8 @@ router.get('/:id', async(ctx, next) => {
 
     db.saddAsync(ctx.params.id + ':views', ctx.request.ip).then(result => {
         db.incrby('views', result)
+        if(result > 0)
+            debug('new view; id: ' + chalk.yellow(ctx.params.id) + ', ip: ' + chalk.yellow(ctx.request.ip))
     })
 })
 module.exports = router

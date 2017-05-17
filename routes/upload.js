@@ -45,19 +45,19 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     }
 
     let id = path.basename(ctx.req.file.filename, shot.ext)
-    debug('new upload; id: ' + chalk.yellow(id) + ' origin: ' + chalk.yellow(shot.origin))
-    let totalShots = await db.incrAsync('shots')
-    debug('total shots: ' + chalk.yellow(totalShots))
+    debug('new upload; id: ' + chalk.yellow(id) + ', origin: ' + chalk.yellow(shot.origin))
+    db.incrAsync('shots').then(total => {
+        debug('TODO: broadcast with socket.io')
+    })
 
     db.hmsetAsync(id, shot)
-    getColors(ctx.req.file.path).then(colors => db.sadd([id + ':' + 'colors', ...colors.map(color => color.hex())]))
+    getColors(ctx.req.file.path).then(colors => db.sadd([id + ':' + 'colors', ...colors.map(color => color.hex())])).catch(function() {})
 
     ctx.body = {
         response: ':)',
         id: id,
         link: base + id
     }
-    debug('send response')
 })
 
 var fs = require('fs')
