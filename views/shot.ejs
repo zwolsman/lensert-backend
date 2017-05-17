@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Lensert - Screenshot (
-        <%= sid %>)</title>
+    <title>Lensert - Screenshot (<%= sid %>)</title>
     <meta name="description" content="Lensert, a simple screenshot utility for OS X and Windows">
     <meta name="author" content="Marvin Zwolsman">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,7 +30,7 @@
 
         a {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: nowrapx;
             align-items: center;
             color: inherit;
             text-decoration: none;
@@ -45,7 +43,7 @@
 </head>
 
 <body style="margin: 0px">
-    <img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);cursor: zoom-in;"
+    <img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);"
         src="<%= src %>">
     <div class="links">
         <a class="link" href="/">
@@ -54,5 +52,4 @@
         </a>
     </div>
 </body>
-
 </html>
