@@ -5,6 +5,12 @@ const multer = require('koa-multer')
 const mime = require('mime-types')
 const imageType = require('image-type')
 const path = require('path')
+const getColors = require('get-image-colors')
+
+//debug
+const debug = require('debug')('lensert-server:upload')
+const chalk = require('chalk')
+
 //db
 const db = require('../db')
 
@@ -19,26 +25,39 @@ var storage = multer.diskStorage({
     }
 })
 
+const base = 'http://localhost:3000/'
 var upload = multer({
     storage: storage
 });
 
 router.post('/upload', upload.single('shot'), async(ctx, next) => {
+
+    if (ctx.req.file == undefined) {
+        ctx.throw(400, 'no shot provided')
+        return
+    }
+
     let shot = {
         size: ctx.req.file.size,
         mime: ctx.req.file.mimetype,
-        ext: '.' + mime.extension(ctx.req.file.mimetype)
+        ext: '.' + mime.extension(ctx.req.file.mimetype),
+        origin: ctx.request.ip
     }
 
     let id = path.basename(ctx.req.file.filename, shot.ext)
-    
+    debug('new upload; id: ' + chalk.yellow(id) + ' origin: ' + chalk.yellow(shot.origin))
     let totalShots = await db.incrAsync('shots')
-    console.log('total shots', totalShots)
-    console.log(ctx.request.ip)
+    debug('total shots: ' + chalk.yellow(totalShots))
 
     db.hmsetAsync(id, shot)
-    Object.assign(shot, {id: id})
-    ctx.body = shot
+    getColors(ctx.req.file.path).then(colors => db.sadd([id + ':' + 'colors', ...colors.map(color => color.hex())]))
+    
+    ctx.body = {
+        response: ':)',
+        id: id,
+        link: base + id
+    }
+    debug('send response')    
 })
 
 var fs = require('fs')
@@ -49,7 +68,7 @@ router.get('/random', async(ctx, next) => {
 router.get('/:id', async(ctx, next) => {
     let exists = await db.existsAsync(ctx.params.id)
 
-    if(!exists) {
+    if (!exists) {
         ctx.throw(404)
     }
 
