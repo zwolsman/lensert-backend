@@ -2,6 +2,8 @@
 const Koa = require('koa')
 const render = require('koa-ejs')
 const serve = require('koa-static')
+const useragent = require('koa-useragent')
+
 //Path
 const path = require('path')
 
@@ -31,7 +33,7 @@ render(app, {
     cache: false
 })
 
-
+app.use(useragent)
 app.use(serve('public'))
 
 app.use(indexRoute.routes())

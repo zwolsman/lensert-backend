@@ -22,7 +22,8 @@
     <script src="/js/odometer.min.js"></script>
 
     <script>
-        console.log([" ______________", "< Hello there! >", " --------------", "        \\   ^__^", "         \\  (oo)\\_______", "            (__)\\       )\\/\\", "                ||----w |", "                ||     ||"].join("\n"));
+
+        console.log(["   _   ", " _|#|_ ", "| (O) |", " ----- ", "lensert"].join("\n"));
         var shots = 0, views = 0;
         var socket = io(location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : ''));
         socket.on('shots', function (data) {

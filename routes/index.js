@@ -9,6 +9,9 @@ const router = new koaRouter()
 const db = require('../db')
 
 router.get('/', async (ctx, next) => {
-    await ctx.render('index', {isMac: false, isWindows: true, views: 0, shots: 0})
+    let views = await db.getAsync('views'), shots = await db.getAsync('shots')
+    
+    await ctx.render('index', {isMac: ctx.userAgent.isMac, isWindows: ctx.userAgent.isWindows, views: views, shots: shots})
 })
 module.exports = router
+

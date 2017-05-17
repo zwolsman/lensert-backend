@@ -13,6 +13,7 @@
     "koa-multer": "^1.0.1",
     "koa-router": "^7.1.1",
     "koa-static": "^3.0.0",
+    "koa-useragent": "^1.0.0",
     "mime-types": "^2.1.15",
     "redis": "^2.7.1",
     "shortid": "^2.2.8"
