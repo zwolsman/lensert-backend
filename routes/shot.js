@@ -4,6 +4,9 @@ const debug = require('debug')('lensert-server:shot')
 const chalk = require('chalk')
 const fs = require('fs')
 
+//config
+const config = require('../config')
+
 //router
 const router = new koaRouter()
 
@@ -37,7 +40,7 @@ router.get('/i(nfo|nformation)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp
     ctx.body = result
 })
 
-router.get('/d(ownload)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp|tif|bmp|jxr]+)?', async (ctx, next) => {
+router.get('/d(ownload)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp|tif|bmp|jxr]+)?', async(ctx, next) => {
     let exists = await db.existsAsync(ctx.params.sid)
 
     if (!exists) {
@@ -55,9 +58,9 @@ router.get('/random', async(ctx, next) => {
     let key = ''
     do {
         key = await db.randomkeyAsync()
-        if(key.indexOf(':') != -1) 
+        if (key.indexOf(':') != -1)
             key = key.slice(0, key.indexOf(':'))
-    } while(key == '' || key == 'shots' || key == 'views')
+    } while (key == '' || key == 'shots' || key == 'views')
 
     await echoShot(key, ctx)
 })
@@ -74,18 +77,33 @@ router.get('/:sid', async(ctx, next) => {
 })
 
 async function echoShot(id, ctx, shot) {
-    if(shot === undefined)
+    if (shot === undefined)
         shot = await db.hgetallAsync(id)
 
-    ctx.response.set('Content-Type', shot.mime)
-    ctx.response.set('Content-Length', shot.size)
-    ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
+    let types = ctx.request.accept.types()
+    debug(types)
+    let htmlIndex = types.indexOf('text/html')
+    let imageIndex = types.indexOf('image/*')
+    if ((htmlIndex < imageIndex && htmlIndex != -1) || imageIndex == -1) {
+        debug('sending html')
+        await ctx.render('shot', {
+            sid: id,
+            src: config.base + id
+        })
+    } else {
+        debug('sending image')
+        ctx.response.set('Content-Type', shot.mime)
+        ctx.response.set('Content-Length', shot.size)
+        ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
+    }
 
-     db.saddAsync(id + ':views', ctx.request.ip).then(result => {
+    db.saddAsync(id + ':views', ctx.request.ip).then(result => {
         db.incrby('views', result)
-        if(result > 0) {
+        if (result > 0) {
             debug('new view; id: ' + chalk.yellow(id) + ', ip: ' + chalk.yellow(ctx.request.ip))
-           db.getAsync('views').then(total => require('../io').instance().emit('views', {views: total }))
+            db.getAsync('views').then(total => require('../io').instance().emit('views', {
+                views: total
+            }))
         }
     })
 }

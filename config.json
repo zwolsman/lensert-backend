@@ -1,0 +1,4 @@
+{
+    "dst" : "/var/lensert/",
+    "base" : "http://localhost:3000/" 
+}

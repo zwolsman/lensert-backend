@@ -7,6 +7,9 @@ const imageType = require('image-type')
 const path = require('path')
 const getColors = require('get-image-colors')
 
+//config
+const config = require('../config')
+
 //debug
 const debug = require('debug')('lensert-server:upload')
 const chalk = require('chalk')
@@ -19,13 +22,12 @@ const router = new koaRouter()
 
 //multer
 var storage = multer.diskStorage({
-    destination: '/var/lensert/',
+    destination: config.dst,
     filename: function (req, file, cb) {
         cb(null, shortid.generate() + '.' + mime.extension(file.mimetype))
     }
 })
 
-const base = 'http://localhost:3000/'
 var upload = multer({
     storage: storage
 });
@@ -56,7 +58,7 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     ctx.body = {
         response: ':)',
         id: id,
-        link: base + id
+        link: config.base + id
     }
 })
 
