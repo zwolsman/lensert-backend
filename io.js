@@ -3,7 +3,7 @@ const debug = require('debug')('lensert-server:socket.io')
 var instance;
 module.exports = {
     server: function(server) {
-        debug('set server')
+        debug('attached server')
         instance = io(server)
     },
     instance: function() {
