@@ -65,18 +65,4 @@ router.get('/random', async(ctx, next) => {
     ctx.body = 'random'
 })
 
-router.get('/:id', async(ctx, next) => {
-    let exists = await db.existsAsync(ctx.params.id)
-
-    if (!exists) {
-        ctx.throw(404)
-    }
-
-    let data = await db.hgetallAsync(ctx.params.id)
-
-    ctx.response.set('Content-Type', data.mime)
-    ctx.response.set('Content-Length', data.size)
-    ctx.body = fs.createReadStream('/var/lensert/' + ctx.params.id + data.ext)
-})
-
 module.exports = router
