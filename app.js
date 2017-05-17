@@ -42,8 +42,4 @@ app.use(uploadRoute.allowedMethods())
 app.use(shotRoute.routes())
 app.use(shotRoute.allowedMethods())
 
-
-function isObject(obj) {
-    return obj === Object(obj)
-}
 module.exports = app
