@@ -1,7 +1,7 @@
 //Koa
 const Koa = require('koa')
 const render = require('koa-ejs')
-const serve = require('koa-static') 
+const serve = require('koa-static')
 //Path
 const path = require('path')
 
@@ -13,26 +13,27 @@ const indexRoute = require('./routes/index')
 const uploadRoute = require('./routes/upload')
 const shotRoute = require('./routes/shot')
 
-app.use(async (ctx, next) => {
+app.use(async(ctx, next) => {
     try {
         await next()
-    } catch(e) {
+    } catch (e) {
         ctx.body = {
             response: ':(',
             error: e.message
         }
     }
 })
+
 render(app, {
-  root: path.join(__dirname, 'views'),
-  layout: false,
-  viewExt: 'ejs',
-  cache: false,
-  debug: true
-});
- 
- 
+    root: path.join(__dirname, 'views'),
+    layout: false,
+    viewExt: 'ejs',
+    cache: false
+})
+
+
 app.use(serve('public'))
+
 app.use(indexRoute.routes())
 app.use(indexRoute.allowedMethods())
 
