@@ -83,8 +83,10 @@ async function echoShot(id, ctx, shot) {
 
      db.saddAsync(id + ':views', ctx.request.ip).then(result => {
         db.incrby('views', result)
-        if(result > 0)
+        if(result > 0) {
             debug('new view; id: ' + chalk.yellow(id) + ', ip: ' + chalk.yellow(ctx.request.ip))
+           db.getAsync('views').then(total => require('../io').instance().emit('views', {views: total }))
+        }
     })
 }
 
