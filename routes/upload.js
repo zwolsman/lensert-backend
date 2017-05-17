@@ -60,9 +60,4 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     }
 })
 
-var fs = require('fs')
-router.get('/random', async(ctx, next) => {
-    ctx.body = 'random'
-})
-
 module.exports = router

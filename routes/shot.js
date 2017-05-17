@@ -50,6 +50,17 @@ router.get('/d(ownload)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp|tif|bm
     await echoShot(ctx.params.sid, ctx, shot)
 })
 
+router.get('/random', async(ctx, next) => {
+
+    let key = ''
+    do {
+        key = await db.randomkeyAsync()
+        if(key.indexOf(':') != -1) 
+            key = key.slice(0, key.indexOf(':'))
+    } while(key == '' || key == 'shots' || key == 'views')
+
+    await echoShot(key, ctx)
+})
 
 router.get('/:sid', async(ctx, next) => {
     let exists = await db.existsAsync(ctx.params.sid)
@@ -60,12 +71,6 @@ router.get('/:sid', async(ctx, next) => {
     }
 
     await echoShot(ctx.params.sid, ctx)
-
-    db.saddAsync(ctx.params.sid + ':views', ctx.request.ip).then(result => {
-        db.incrby('views', result)
-        if(result > 0)
-            debug('new view; id: ' + chalk.yellow(ctx.params.sid) + ', ip: ' + chalk.yellow(ctx.request.ip))
-    })
 })
 
 async function echoShot(id, ctx, shot) {
@@ -75,5 +80,12 @@ async function echoShot(id, ctx, shot) {
     ctx.response.set('Content-Type', shot.mime)
     ctx.response.set('Content-Length', shot.size)
     ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
+
+     db.saddAsync(id + ':views', ctx.request.ip).then(result => {
+        db.incrby('views', result)
+        if(result > 0)
+            debug('new view; id: ' + chalk.yellow(id) + ', ip: ' + chalk.yellow(ctx.request.ip))
+    })
 }
+
 module.exports = router
