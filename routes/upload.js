@@ -38,9 +38,9 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     }
 
     let shot = {
-        size: ctx.req.file.size,
-        mime: ctx.req.file.mimetype,
         ext: '.' + mime.extension(ctx.req.file.mimetype),
+        mime: ctx.req.file.mimetype,
+        size: ctx.req.file.size,
         origin: ctx.request.ip
     }
 
@@ -51,13 +51,13 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
 
     db.hmsetAsync(id, shot)
     getColors(ctx.req.file.path).then(colors => db.sadd([id + ':' + 'colors', ...colors.map(color => color.hex())]))
-    
+
     ctx.body = {
         response: ':)',
         id: id,
         link: base + id
     }
-    debug('send response')    
+    debug('send response')
 })
 
 var fs = require('fs')

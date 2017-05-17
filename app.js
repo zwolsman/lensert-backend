@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const app = new Koa()
 const uploadRoute = require('./routes/upload')
+const shotRoute = require('./routes/shot')
 
 app.use(async (ctx, next) => {
     try {
@@ -16,6 +17,8 @@ app.use(async (ctx, next) => {
 app.use(uploadRoute.routes())
 app.use(uploadRoute.allowedMethods())
 
+app.use(shotRoute.routes())
+app.use(shotRoute.allowedMethods())
 
 
 function isObject(obj) {
