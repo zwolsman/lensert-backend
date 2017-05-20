@@ -45,10 +45,11 @@ function saveDoc(doc) {
     db.incrAsync('shots')
 
     //inc view counter
-    viewModel.count({
+    viewModel.find({
         shot_id: doc.id
-    }, (err, count) => {
-        db.incrby('views', count)
+    }, (err, views) => {
+        views.forEach(view => db.saddAsync(id + ':views', view.ip))
+        db.incrby('views', views.length)
     })
 
     //write shot
