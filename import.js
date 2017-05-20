@@ -34,7 +34,7 @@ function saveDoc(doc) {
         origin: '::1'
     }
 
-    if (doc.palette)
+    if (doc.palette && doc.palette.length > 0)
         //shot colors
         db.saddAsync([id + ':' + 'colors', ...doc.palette.map(color => color.hex)])
 
@@ -45,7 +45,6 @@ function saveDoc(doc) {
     viewModel.count({
         shot_id: shot.id
     }, (err, count) => {
-        console.log('views: ' + count)
         db.incrby('views', count)
     })
 
