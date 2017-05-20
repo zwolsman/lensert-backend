@@ -15,7 +15,8 @@ let stream = shotModel.find().cursor()
 stream.on('data', saveDoc).on('error', err => {
     console.log(err)
 }).on('close', () => {
-    console.log('closed')
+    debug('finished')
+    process.exit(0);
 })
 
 
