@@ -27,15 +27,13 @@ if (require('./server').isSecure)
 app.use(async(ctx, next) => {
     try {
         await next()
+        if (!ctx.body) {
+            ctx.throw(404)
+        }
     } catch (e) {
-
-        if (e) {
-            console.log(e)
-            ctx.body = {
-                result: ':(',
-                error: e.message
-            }
-            app.emit('error', e, ctx);
+        ctx.body = {
+            result: ':(',
+            error: e.message
         }
     }
 })
