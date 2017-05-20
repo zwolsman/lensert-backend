@@ -3,6 +3,7 @@ const Koa = require('koa')
 const render = require('koa-ejs')
 const serve = require('koa-static')
 const useragent = require('koa-useragent')
+const enforceHttps = require('koa-sslify')
 
 //Path
 const path = require('path')
@@ -14,6 +15,8 @@ const app = new Koa()
 const indexRoute = require('./routes/index')
 const uploadRoute = require('./routes/upload')
 const shotRoute = require('./routes/shot')
+
+app.use(enforceHttps())
 
 app.use(async(ctx, next) => {
     try {
