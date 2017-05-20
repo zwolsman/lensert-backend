@@ -13,6 +13,7 @@ const app = new Koa()
 
 //routes
 const indexRoute = require('./routes/index')
+const downloadRoute = require('./routes/download')
 const uploadRoute = require('./routes/upload')
 const shotRoute = require('./routes/shot')
 
@@ -43,6 +44,9 @@ app.use(serve('public'))
 
 app.use(indexRoute.routes())
 app.use(indexRoute.allowedMethods())
+
+app.use(downloadRoute.routes())
+app.use(downloadRoute.allowedMethods())
 
 app.use(uploadRoute.routes())
 app.use(uploadRoute.allowedMethods())
