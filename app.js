@@ -4,12 +4,14 @@ const render = require('koa-ejs')
 const serve = require('koa-static')
 const useragent = require('koa-useragent')
 const enforceHttps = require('koa-sslify')
+const koaRouter = require('koa-router')
 
 //Path
 const path = require('path')
 
 //app
 const app = new Koa()
+const router = new koaRouter()
 
 //routes
 const indexRoute = require('./routes/index')
@@ -18,19 +20,27 @@ const uploadRoute = require('./routes/upload')
 const shotRoute = require('./routes/shot')
 
 
-if(require('./server').isSecure)
+if (require('./server').isSecure)
     app.use(enforceHttps())
+
 
 app.use(async(ctx, next) => {
     try {
         await next()
     } catch (e) {
-        ctx.body = {
-            result: ':(',
-            error: e.message
+
+        if (e) {
+            console.log(e)
+            ctx.body = {
+                result: ':(',
+                error: e.message
+            }
+            app.emit('error', e, ctx);
         }
     }
 })
+
+
 
 render(app, {
     root: path.join(__dirname, 'views'),

@@ -83,16 +83,16 @@ async function echoShot(id, ctx, shot) {
     let types = ctx.request.accept.types()
     let htmlIndex = types.indexOf('text/html')
     let imageIndex = types.indexOf('image/*')
-    if ((htmlIndex < imageIndex && htmlIndex != -1) || imageIndex == -1) {
+    /*if ((htmlIndex < imageIndex && htmlIndex != -1) || imageIndex == -1) {
         await ctx.render('shot', {
             sid: id,
             src: config.base + id
         })
-    } else {
-        ctx.response.set('Content-Type', shot.mime)
-        ctx.response.set('Content-Length', shot.size)
-        ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
-    }
+    } else { */
+    ctx.response.set('Content-Type', shot.mime)
+    ctx.response.set('Content-Length', shot.size)
+    ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
+    //}
 
     db.saddAsync(id + ':views', ctx.request.ip).then(result => {
         db.incrby('views', result)
