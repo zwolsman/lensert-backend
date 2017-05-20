@@ -34,6 +34,8 @@ function saveDoc(doc) {
         origin: '::1'
     }
 
+    db.hmsetAsync(id, shot)
+
     if (doc.palette && doc.palette.length > 0)
         //shot colors
         db.saddAsync([id + ':' + 'colors', ...doc.palette.map(color => color.hex)])
