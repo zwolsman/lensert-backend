@@ -56,7 +56,7 @@ router.post('/upload', upload.single('shot'), async(ctx, next) => {
     getColors(ctx.req.file.path).then(colors => db.sadd([id + ':' + 'colors', ...colors.map(color => color.hex())])).catch(function() {})
 
     ctx.body = {
-        response: ':)',
+        result: ':)',
         id: id,
         link: config.base + id
     }

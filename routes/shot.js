@@ -28,7 +28,7 @@ router.get('/i(nfo|nformation)?/:sid([a-zA-Z0-9-_]{7,14}):ext(.[jpg|png|gif|webp
     let views = await db.scardAsync(ctx.params.sid + ':views') || 0
     let colors = await db.smembersAsync(ctx.params.sid + ':colors') || []
     let result = {
-        response: ':)',
+        result: ':)',
         id: ctx.params.sid
     }
     Object.assign(result, base, {

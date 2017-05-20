@@ -16,14 +16,16 @@ const indexRoute = require('./routes/index')
 const uploadRoute = require('./routes/upload')
 const shotRoute = require('./routes/shot')
 
-app.use(enforceHttps())
+
+if(require('./server').isSecure)
+    app.use(enforceHttps())
 
 app.use(async(ctx, next) => {
     try {
         await next()
     } catch (e) {
         ctx.body = {
-            response: ':(',
+            result: ':(',
             error: e.message
         }
     }
