@@ -12,9 +12,7 @@ const db = require('../db')
 
 router.get('/download', async(ctx, next) => {
     let type = ctx.params.type || 'win'
-    console.log(`data/lensert-${type}.zip`)
     if (!fs.existsSync(`data/lensert-${type}.zip`)) {
-        console.log('bestaat niet?')
         ctx.throw(404)
     }
 
