@@ -81,17 +81,14 @@ async function echoShot(id, ctx, shot) {
         shot = await db.hgetallAsync(id)
 
     let types = ctx.request.accept.types()
-    debug(types)
     let htmlIndex = types.indexOf('text/html')
     let imageIndex = types.indexOf('image/*')
     if ((htmlIndex < imageIndex && htmlIndex != -1) || imageIndex == -1) {
-        debug('sending html')
         await ctx.render('shot', {
             sid: id,
             src: config.base + id
         })
     } else {
-        debug('sending image')
         ctx.response.set('Content-Type', shot.mime)
         ctx.response.set('Content-Length', shot.size)
         ctx.body = fs.createReadStream('/var/lensert/' + id + shot.ext)
