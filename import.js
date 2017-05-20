@@ -45,7 +45,7 @@ function saveDoc(doc) {
 
     //inc view counter
     viewModel.count({
-        shot_id: shot.id
+        shot_id: id
     }, (err, count) => {
         db.incrby('views', count)
     })
