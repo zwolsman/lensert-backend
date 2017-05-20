@@ -8,26 +8,31 @@ var debug = require('debug')('lensert-server:server');
 var io = require('../io')
 
 /**
- * Get port from environment and store in Express.
+ * Create HTTP(S) server.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-
-
-/**
- * Create HTTP server.
- */
-
-var server = require('../server')
-io.server(server)
+var servers = require('../server').servers()
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-module.exports = server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+servers.forEach(index => {
+    module.exports = index.server.listen(index.port)
+    index.server.on('error', onError)
+    index.server.on('listening', function () {
+        var addr =  index.server.address();
+        var bind = typeof addr === 'string' ?
+            'pipe ' + addr :
+            'port ' + addr.port;
+        debug('Listening on ' + bind);
+    })
+})
+
+/**
+ * Set Socket.IO to the latest server 
+ */
+io.server(module.exports)
 
 /**
  * Normalize a port into a number, string, or false.
@@ -75,16 +80,4 @@ function onError(error) {
         default:
             throw error;
     }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string' ?
-        'pipe ' + addr :
-        'port ' + addr.port;
-    debug('Listening on ' + bind);
 }
